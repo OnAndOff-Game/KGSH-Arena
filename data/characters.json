@@ -237,7 +237,7 @@
       },
       "ultimate": {
         "name": "기가 드릴!!!",
-        "icon": "🌀",
+        "icon": "",
         "ultImage": "images/kimdrill.png",
         "actions": [
           {
@@ -249,7 +249,7 @@
             "bounces": 2,
             "tickRate": 0.05,
             "life": 10,
-            "text": "🌀",
+            "text": "",
             "image": "images/drillprojectile.png",
             "piercing": true,
             "slowMult": 0.1,
@@ -263,6 +263,67 @@
         "icon": "🥋",
         "type": "armor",
         "reduction": 0.15
+      }
+    },
+       "jeong": {
+      "name": "정준혁",
+      "image": "images/jj.jpg",
+      "color": "#7cd64a",
+      "maxHp": 50,
+      "radius": 22,
+      "baseSpeed": 320,
+      "ultMax": 100,
+      "ultOnHit": 11,
+      "ultOnHurt": 11,
+      "ultPerSec": 3,
+      "basic": {
+        "name": "혁바드",
+        "icon": "🎶",
+        "cooldown": 0.9,
+        "slowPerStack": 0.06,
+        "desc": "기타를 쳐서 0.9초마다 사거리 안 모든 적을 때린다. 데미지는 처음엔 2로 미미하지만, 적이 맞을 때마다 스택이 쌓여 스택당 +2.5씩 증가(최대 10스택, 24.5). 스택이 쌓일수록 본인 이동속도는 스택당 6%씩 느려진다(최저 20%). 5초간 아무도 못 때리면 스택이 사라진다.",
+        "actions": [
+          {
+            "type": "aurapulse",
+            "radius": 100,
+            "damage": 2,
+            "damagePerStack": 2.5,
+            "maxStacks": 10,
+            "stackGain": 1,
+            "stackDuration": 5
+          }
+        ]
+      },
+      "ultimate": {
+        "name": "치킨무 폭격",
+        "icon": "🟡",
+        "ultImage": "야, 너 아까 치킨무 더 먹고 싶다고 징징댔잖아. 시발아 웃어, 좋은 날이잖아 ㅋㅋㅋㅋ",
+        "desc": "하늘에서 치킨무가 우수수 떨어진다. 치킨무 10개가 낙하하며 명중 시 각 16 데미지, 그리고 맞은 적을 아래로 강하게 짓누른다(넉백).",
+        "actions": [
+          {
+            "type": "projectile",
+            "count": 10,
+            "speed": 70,
+            "radius": 18,
+            "damage": 16,
+            "bounces": 0,
+            "spread": 75,
+            "life": 4,
+            "gravity": 520,
+            "direction": "down",
+            "knockback": 260,
+            "knockbackDir": "down",
+            "color": "#f3e04a",
+            "text": "🟡"
+          }
+        ]
+      },
+      "passive": {
+        "name": "얍삽",
+        "icon": "💨",
+        "type": "dodge",
+        "chance": 0.5,
+        "desc": "날렵하게 피한다. 받는 모든 공격을 50% 확률로 완전히 회피한다."
       }
     }
   }

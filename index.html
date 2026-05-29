@@ -143,6 +143,23 @@ canvas{display:block;width:100%;height:auto;touch-action:none;image-rendering:pi
 .chip .tag{font-family:var(--dpx);font-size:7px;letter-spacing:1px;color:var(--dim)}
 .chip .sk{font-family:var(--pix);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:3px}
 .cd{position:absolute;inset:0;background:rgba(12,8,20,.82);display:flex;align-items:center;justify-content:center;font-family:var(--dpx);font-size:13px;color:var(--gold)}
+.chip{cursor:pointer}
+.chip.active{outline:2px solid var(--accent);outline-offset:-2px}
+.skillDesc{margin-top:10px;background:#0c0814;border-left:4px solid var(--accent);padding:9px 11px;min-height:46px;font-size:11px;line-height:1.7;color:#cfc9da}
+.skillDesc .sdTitle{font-family:var(--pix);font-size:12px;color:var(--accent);margin-bottom:5px;display:flex;align-items:center;gap:6px}
+.skillDesc .sdEmpty{color:var(--dim)}
+.slotList{display:flex;flex-direction:column;gap:8px;margin-top:6px}
+.slotRow{display:flex;gap:8px;align-items:center}
+.slotRow .badge{font-family:var(--dpx);font-size:9px;letter-spacing:1px;color:var(--dim);min-width:54px}
+.slotRow select{flex:1}
+.slotRow .del{flex:0 0 auto;padding:6px 10px}
+.slotBtns{display:flex;align-items:center;gap:12px;margin-top:10px}
+.slotCount{font-family:var(--dpx);font-size:10px;color:var(--dim)}
+.fighters{flex-wrap:wrap}
+.fighters .card{flex:1 1 240px;min-width:210px}
+.gauges{flex-wrap:wrap}
+.card.dead{opacity:.4;filter:grayscale(.7)}
+.card.dead::after{content:'K.O.';position:absolute;top:8px;right:10px;font-family:var(--pix);font-size:11px;color:#ff6b6b}
 
 .footer{margin-top:20px;text-align:center;color:var(--dim);font-size:10px;letter-spacing:.5px;line-height:1.8}
 
@@ -185,12 +202,12 @@ select.input{appearance:none}
       <h2>매치 만들기 (시뮬레이션)</h2>
       <span class="srcpill">데이터 소스: <span id="srcTag">-</span></span>
     </div>
-    <div class="sub">두 캐릭터를 골라 싸움을 붙입니다. 시드가 같으면 결과도 항상 같습니다.</div>
+    <div class="sub">캐릭터를 2~6명 골라 난투를 붙입니다. 전원 서로 적이며, 마지막에 살아남으면 승리. 시드가 같으면 결과도 항상 같습니다.</div>
 
-    <div class="vs-grid">
-      <div class="pick left"><label>1P 캐릭터</label><select id="selA" class="input" style="margin-top:8px"></select></div>
-      <div class="vs-badge">VS</div>
-      <div class="pick right"><label>2P 캐릭터</label><select id="selB" class="input" style="margin-top:8px"></select></div>
+    <div id="slotList" class="slotList"></div>
+    <div class="slotBtns">
+      <button id="addSlot" class="btn ghost sm">＋ 파이터 추가</button>
+      <span id="slotCount" class="slotCount">2명</span>
     </div>
 
     <div class="seedrow">
@@ -226,10 +243,7 @@ select.input{appearance:none}
       </div>
     </div>
 
-    <div class="gauges">
-      <div class="gauge g1" id="g1"><div class="gh"><b id="g1name">1P</b><span class="ult">ULTIMATE</span></div><div class="gbar"><div class="gfill" id="g1fill"></div></div></div>
-      <div class="gauge g2" id="g2"><div class="gh"><span class="ult">ULTIMATE</span><b id="g2name">2P</b></div><div class="gbar"><div class="gfill" id="g2fill"></div></div></div>
-    </div>
+    <div class="gauges" id="gauges"></div>
 
     <div class="arena">
       <canvas id="cv" width="800" height="470"></canvas>
@@ -243,24 +257,7 @@ select.input{appearance:none}
       </div>
     </div>
 
-    <div class="fighters">
-      <div class="card c1" id="card1">
-        <div class="nameRow"><span class="cname" id="n1">1P</span><span class="chp" id="hp1">- / -</span></div>
-        <div class="hpbar"><div class="hpfill" id="hpf1"></div><div class="shield" id="sh1"></div></div>
-        <div class="skills">
-          <div class="chip"><span class="ic" id="bi1">⚔️</span><div style="min-width:0"><div class="tag">기본공격</div><div class="sk" id="bn1">-</div></div><div class="cd" id="cd1" style="display:none"></div></div>
-          <div class="chip"><span class="ic" id="pi1">✨</span><div style="min-width:0"><div class="tag">패시브</div><div class="sk" id="pn1">-</div></div></div>
-        </div>
-      </div>
-      <div class="card c2" id="card2">
-        <div class="nameRow"><span class="cname" id="n2">2P</span><span class="chp" id="hp2">- / -</span></div>
-        <div class="hpbar"><div class="hpfill" id="hpf2"></div><div class="shield" id="sh2"></div></div>
-        <div class="skills">
-          <div class="chip"><span class="ic" id="bi2">⚔️</span><div style="min-width:0"><div class="tag">기본공격</div><div class="sk" id="bn2">-</div></div><div class="cd" id="cd2" style="display:none"></div></div>
-          <div class="chip"><span class="ic" id="pi2">✨</span><div style="min-width:0"><div class="tag">패시브</div><div class="sk" id="pn2">-</div></div></div>
-        </div>
-      </div>
-    </div>
+    <div class="fighters" id="fighters"></div>
   </section>
 
   <div class="footer">시드 기반 결정론 시뮬레이션 · 같은 링크 = 같은 경기 · PvP 매칭은 추후 확장</div>
@@ -315,6 +312,19 @@ select.input{appearance:none}
       const dx = to.x - from.x, dy = to.y - from.y;
       const d = Math.hypot(dx, dy) || 1;
       return { x: dx / d, y: dy / d };
+    },
+    // 같은 편이 아닌, 살아있는 적 중 가장 가까운 대상 (멀티 배틀 지원)
+    nearestEnemy(world, f) {
+      let best = null, bestD = Infinity;
+      for (const o of world.fighters) {
+        if (o === f || o.team === f.team || !o.alive()) continue;
+        const d = Math.hypot(o.x - f.x, o.y - f.y);
+        if (d < bestD) { bestD = d; best = o; }
+      }
+      return best;
+    },
+    aliveEnemies(world, f) {
+      return world.fighters.filter(o => o !== f && o.team !== f.team && o.alive());
     }
   };
 
@@ -326,10 +336,11 @@ select.input{appearance:none}
   'use strict';
 
   class Fighter {
-    constructor(def, index, side) {
+    constructor(def, index, side, team) {
       this.def = JSON.parse(JSON.stringify(def)); // 깊은 복사로 원본 객체 오염 방지
-      this.index = index;           // 0 또는 1
-      this.side = side;             // 0=왼쪽, 1=오른쪽
+      this.index = index;           // 0,1,2... 슬롯 번호
+      this.side = side;             // 배치용 인덱스
+      this.team = (team == null) ? index : team; // 멀티 배틀: 기본은 각자 다른 팀(전원 적대)
       this.name = def.name;
       this.color = def.color || '#888888';
       this.image = def.image || null;
@@ -350,12 +361,20 @@ select.input{appearance:none}
       this.morphTimer = 0;          // 변신 지속 시간
       this.morphDuration = 0;       // 변신 총 시간
       this.originalState = null;    // 변신 이전 상태 백업
+      this.stacks = 0;              // 정강이 까기 스택
+      this.stackTimer = 0;          // 스택 유지 시간(0 되면 전부 소멸)
+      this.auraTimer = 0;           // 바드형 오라 발동 주기 타이머
     }
     alive() { return this.hp > 0; }
     passive() { return this.def.passive || {}; }
     statMult(stat) {
       let m = 1;
       for (let i = 0; i < this.buffs.length; i++) if (this.buffs[i].stat === stat) m *= this.buffs[i].mult;
+      // 정강이 스택: 스택이 쌓일수록 본인 이동속도 감소
+      if (stat === 'speed' && this.stacks > 0) {
+        const per = (this.def.basic && this.def.basic.slowPerStack) || 0;
+        m *= Math.max(0.2, 1 - per * this.stacks); // 최저 20% 속도까지
+      }
       return m;
     }
   }
@@ -381,6 +400,8 @@ select.input{appearance:none}
       this.slowMult = p.slowMult || 1.0; // 관통 타격시 적에게 거는 슬로우 배율
       this.selfSlowMult = p.selfSlowMult || 1.0; // 적과 닿아 있는 동안 투사체 본인 이동속도 배율
       this.tickRate = p.tickRate || 0.3; // 관통 투사체 틱 데미지 간격(초)
+      this.knockback = p.knockback || 0;       // 명중 시 넉백 세기
+      this.knockbackDir = p.knockbackDir || null; // 'down'|'up'|null(적 반대방향)
       this.hitCooldowns = {};       // 관통 틱 적용을 위한 내부 타겟별 쿨다운 맵
       this.dead = false;
     }
@@ -430,6 +451,46 @@ select.input{appearance:none}
     }
   }));
 
+  // 2-b) 스택형 근접 타격 (정강이 까기): 때릴수록 스택이 쌓여 데미지 증가, 동시에 자신 이속 감소
+  ActionRegistry.register('stackmelee', instant(function (ctx, action, f) {
+    const e = ctx.enemyOf(f);
+    const reach = (action.range || 60) + f.r + e.r;
+    if (e.alive() && U.dist(f, e) <= reach) {
+      // 스택 증가 (쿨타임으로 제어되는 stackGain은 SkillRunner 호출 자체가 basicCd로 게이팅됨)
+      const max = action.maxStacks || 8;
+      f.stacks = Math.min(max, (f.stacks || 0) + (action.stackGain || 1));
+      f.stackTimer = action.stackDuration || 4; // 이 시간 동안 안 때리면 스택 소멸
+
+      // 데미지 = 기본 + 스택당 증가량
+      const dmg = (action.damage || 4) + (f.stacks - 1) * (action.damagePerStack || 3);
+      ctx.combat.dealDamage(ctx.world, f, e, dmg, { kind: 'melee' });
+      if (action.knockback) {
+        const d = U.dir(f, e);
+        e.vx += d.x * action.knockback; e.vy += d.y * action.knockback;
+      }
+    }
+  }));
+
+  // 2-c) 바드형 오라 펄스 (정준혁): 주변 모든 적에게 데미지 + 본인 스택 적립. 스택 높을수록 데미지↑·본인 이속↓
+  ActionRegistry.register('aurapulse', instant(function (ctx, action, f) {
+    const radius = action.radius || 95;
+    const max = action.maxStacks || 10;
+    const enemies = U.aliveEnemies(ctx.world, f).filter(e => U.dist(f, e) <= radius + e.r);
+
+    // 펄스 시각효과
+    ctx.world.events.push({ type: 'aoe', x: f.x, y: f.y, radius, color: f.color });
+
+    if (enemies.length > 0) {
+      // 적이 범위 안에 있을 때만 스택 적립
+      f.stacks = Math.min(max, (f.stacks || 0) + (action.stackGain || 1));
+      f.stackTimer = action.stackDuration || 5;
+    }
+    const dmg = (action.damage || 2) + (Math.max(0, (f.stacks || 0) - 1)) * (action.damagePerStack || 2.5);
+    for (const e of enemies) {
+      ctx.combat.dealDamage(ctx.world, f, e, dmg, { kind: 'aoe' });
+    }
+  }));
+
   // 3) 밀치기
   ActionRegistry.register('knockback', instant(function (ctx, action, f) {
     const e = ctx.enemyOf(f);
@@ -472,7 +533,9 @@ select.input{appearance:none}
         piercing: !!action.piercing,
         slowMult: action.slowMult || 1.0,
         selfSlowMult: action.selfSlowMult || 1.0,
-        tickRate: action.tickRate || 0.3
+        tickRate: action.tickRate || 0.3,
+        knockback: action.knockback || 0,
+        knockbackDir: action.knockbackDir || null
       });
     }
   }));
@@ -505,7 +568,7 @@ select.input{appearance:none}
     ctx.world.events.push({ type: 'aoe', x: cx, y: cy, radius: action.radius || 100, color: f.color });
     for (let i = 0; i < ctx.world.fighters.length; i++) {
       const t = ctx.world.fighters[i];
-      if (t !== f && t.alive() && U.dist({ x: cx, y: cy }, t) <= (action.radius || 100) + t.r) {
+      if (t.team !== f.team && t.alive() && U.dist({ x: cx, y: cy }, t) <= (action.radius || 100) + t.r) {
         ctx.combat.dealDamage(ctx.world, f, t, action.damage || 15, { kind: 'aoe' });
       }
     }
@@ -649,9 +712,20 @@ select.input{appearance:none}
   class PhysicsSystem {
     launch(world) {
       const A = world.arena;
+      const n = world.fighters.length;
+      const cx = A.w / 2, cy = A.h / 2;
+      const R = Math.min(A.w, A.h) * 0.34;
       world.fighters.forEach((f, i) => {
-        f.x = (i === 0 ? 0.28 : 0.72) * A.w;
-        f.y = 0.5 * A.h + (i === 0 ? -1 : 1) * world.rng.range(20, 80);
+        if (n <= 2) {
+          // 1:1은 기존 좌우 배치 유지
+          f.x = (i === 0 ? 0.28 : 0.72) * A.w;
+          f.y = 0.5 * A.h + (i === 0 ? -1 : 1) * world.rng.range(20, 80);
+        } else {
+          // 다수는 원형으로 균등 배치
+          const a0 = (i / n) * Math.PI * 2 - Math.PI / 2;
+          f.x = cx + Math.cos(a0) * R;
+          f.y = cy + Math.sin(a0) * R;
+        }
         const ang = world.rng.range(0, Math.PI * 2);
         f.vx = Math.cos(ang) * f.base;
         f.vy = Math.sin(ang) * f.base;
@@ -675,14 +749,19 @@ select.input{appearance:none}
           f.vx = f.vx / sp * ns; f.vy = f.vy / sp * ns;
         }
       }
-      const a = world.fighters[0], b = world.fighters[1];
-      if (a && b && a.alive() && b.alive()) {
-        const d = U.dist(a, b), min = a.r + b.r;
-        if (d < min && d > 0) {
-          const nx = (b.x - a.x) / d, ny = (b.y - a.y) / d, overlap = (min - d) / 2;
-          a.x -= nx * overlap; a.y -= ny * overlap; b.x += nx * overlap; b.y += ny * overlap;
-          const av = a.vx * nx + a.vy * ny, bv = b.vx * nx + b.vy * ny, p = av - bv;
-          a.vx -= p * nx; a.vy -= p * ny; b.vx += p * nx; b.vy += p * ny;
+      // 모든 파이터 쌍 충돌 처리 (멀티 배틀)
+      const fs = world.fighters;
+      for (let i = 0; i < fs.length; i++) {
+        const a = fs[i]; if (!a.alive()) continue;
+        for (let j = i + 1; j < fs.length; j++) {
+          const b = fs[j]; if (!b.alive()) continue;
+          const d = U.dist(a, b), min = a.r + b.r;
+          if (d < min && d > 0) {
+            const nx = (b.x - a.x) / d, ny = (b.y - a.y) / d, overlap = (min - d) / 2;
+            a.x -= nx * overlap; a.y -= ny * overlap; b.x += nx * overlap; b.y += ny * overlap;
+            const av = a.vx * nx + a.vy * ny, bv = b.vx * nx + b.vy * ny, p = av - bv;
+            a.vx -= p * nx; a.vy -= p * ny; b.vx += p * nx; b.vy += p * ny;
+          }
         }
       }
     }
@@ -697,6 +776,11 @@ select.input{appearance:none}
     dealDamage(world, attacker, victim, amount, opts) {
       opts = opts || {};
       if (!victim.alive() || amount <= 0) return;
+      // 회피 패시브(얍삽): 일정 확률로 데미지 완전 무효
+      if (!opts.noDodge && victim.passive().type === 'dodge' && world.rng.chance(victim.passive().chance || 0)) {
+        world.events.push({ type: 'dodge', x: victim.x, y: victim.y, index: victim.index, color: victim.color });
+        return;
+      }
       let dmg = amount * attacker.statMult('damage');
 
       let crit = false;
@@ -729,7 +813,10 @@ select.input{appearance:none}
         type: 'hit', x: victim.x, y: victim.y, dmg, crit,
         big: crit || dmg >= 14, victim: victim.index, color: victim.color
       });
-      if (victim.hp <= 0 && !world.winner) world.winner = attacker;
+      if (victim.hp <= 0) {
+        world.events.push({ type: 'death', x: victim.x, y: victim.y, index: victim.index, color: victim.color });
+        victim._lastAttacker = attacker;
+      }
     }
     heal(world, f, amt) {
       f.hp = Math.min(f.maxHp, f.hp + amt);
@@ -740,6 +827,11 @@ select.input{appearance:none}
         if (!f.alive()) continue;
         if (f.passive().type === 'regen') f.hp = Math.min(f.maxHp, f.hp + (f.passive().perSec || 0) * dt);
         f.buffs = f.buffs.filter(b => (b.t -= dt) > 0);
+        // 정강이 스택 유지 시간 감소 → 만료되면 스택 전부 소멸
+        if (f.stacks > 0) {
+          f.stackTimer -= dt;
+          if (f.stackTimer <= 0) { f.stacks = 0; f.stackTimer = 0; }
+        }
         if (f.shieldTimer) { f.shieldTimer.t -= dt; if (f.shieldTimer.t <= 0) { f.shield = Math.max(0, f.shield - f.shieldTimer.amt); f.shieldTimer = null; } }
       }
 
@@ -754,7 +846,7 @@ select.input{appearance:none}
         }
 
         for (const f of world.fighters) {
-          if (f !== z.owner && f.alive()) {
+          if (f.team !== z.owner.team && f.alive()) {
             const dist = U.dist(f, { x: z.x, y: z.y });
             if (dist <= z.r + f.r) {
               let hasDebuff = false;
@@ -793,27 +885,21 @@ select.input{appearance:none}
           p.x = p.owner.x + Math.cos(p.orbit.angle) * p.orbit.radius;
           p.y = p.owner.y + Math.sin(p.orbit.angle) * p.orbit.radius;
         } else {
-          // 관통 투사체 내부 타겟 쿨타임 차감
-          if (p.piercing && p.hitCooldowns) {
-            for (let k in p.hitCooldowns) {
-              p.hitCooldowns[k] -= dt;
-            }
-          }
-
           if (p.homing > 0) {
-            const tg = world.fighters[p.owner.index === 0 ? 1 : 0];
-            const d = U.dir(p, tg), sp = Math.hypot(p.vx, p.vy);
-            p.vx += (d.x * sp - p.vx) * p.homing * dt * 4;
-            p.vy += (d.y * sp - p.vy) * p.homing * dt * 4;
+            const tg = U.nearestEnemy(world, p.owner);
+            if (tg) {
+              const d = U.dir(p, tg), sp = Math.hypot(p.vx, p.vy);
+              p.vx += (d.x * sp - p.vx) * p.homing * dt * 4;
+              p.vy += (d.y * sp - p.vy) * p.homing * dt * 4;
+            }
           }
           p.vy += p.gravity * dt;
 
           // 적과 닿아 있는 동안 투사체 본인 이동속도 감소 (드릴이 적에 박히면 느려지고, 벗어나면 원래 속도)
           let moveMult = 1.0;
           if (p.selfSlowMult < 1.0) {
-            const ct = world.fighters[p.owner.index === 0 ? 1 : 0];
-            if (ct.alive() && U.dist(p, ct) < p.r + ct.r) {
-              moveMult = p.selfSlowMult;
+            for (const ct of world.fighters) {
+              if (ct.team !== p.owner.team && ct.alive() && U.dist(p, ct) < p.r + ct.r) { moveMult = p.selfSlowMult; break; }
             }
           }
           p.x += p.vx * dt * moveMult; p.y += p.vy * dt * moveMult;
@@ -825,39 +911,58 @@ select.input{appearance:none}
           if (p.maxBounces > 0 && p.bounces < 0) p.dead = true;
         }
 
-        const tg = world.fighters[p.owner.index === 0 ? 1 : 0];
-        if (tg.alive() && U.dist(p, tg) < p.r + tg.r) {
-          if (p.orbit) {
-            if (p.orbit.hitCooldown <= 0) {
-              this.combat.dealDamage(world, p.owner, tg, p.dmg, { kind: 'projectile' });
-              p.orbit.hitCooldown = 0.4;
-            }
-          } else if (p.piercing) {
-            // 드릴 관통: 타겟 쿨다운 확인 후 주기적으로 틱 데미지와 이속 감소 디버프 적용
-            if (!(tg.index in p.hitCooldowns) || p.hitCooldowns[tg.index] <= 0) {
-              this.combat.dealDamage(world, p.owner, tg, p.dmg, { kind: 'projectile' });
-              p.hitCooldowns[tg.index] = p.tickRate; // tickRate초마다 틱 타격
-
-              // 70% 감속 디버프 적용 (slowMult: 0.3 = 70% 속도 감소)
-              let exists = false;
-              for (const b of tg.buffs) {
-                if (b.source === p) {
-                  b.t = 1.0; // 1초 지속 갱신
-                  exists = true;
-                  break;
+        // 모든 적과 충돌 검사 (멀티 배틀)
+        const enemies = world.fighters.filter(o => o.team !== p.owner.team && o.alive());
+        for (const tg of enemies) {
+          const touching = U.dist(p, tg) < p.r + tg.r;
+          if (touching) {
+            if (p.orbit) {
+              if (p.orbit.hitCooldown <= 0) {
+                this.combat.dealDamage(world, p.owner, tg, p.dmg, { kind: 'projectile' });
+                this._knock(p, tg);
+                p.orbit.hitCooldown = 0.4;
+              }
+            } else if (p.piercing) {
+              if (!(tg.index in p.hitCooldowns)) p.hitCooldowns[tg.index] = p.tickRate;
+              p.hitCooldowns[tg.index] += dt;
+              let ticks = 0;
+              while (p.hitCooldowns[tg.index] >= p.tickRate && ticks < 60) {
+                this.combat.dealDamage(world, p.owner, tg, p.dmg, { kind: 'projectile' });
+                p.hitCooldowns[tg.index] -= p.tickRate;
+                ticks++;
+              }
+              if (ticks > 0) {
+                this._knock(p, tg);
+                let exists = false;
+                for (const b of tg.buffs) {
+                  if (b.source === p) { b.t = 1.0; exists = true; break; }
                 }
+                if (!exists) tg.buffs.push({ stat: 'speed', mult: p.slowMult, t: 1.0, source: p });
               }
-              if (!exists) {
-                tg.buffs.push({ stat: 'speed', mult: p.slowMult, t: 1.0, source: p });
-              }
+            } else {
+              this.combat.dealDamage(world, p.owner, tg, p.dmg, { kind: 'projectile' });
+              this._knock(p, tg);
+              p.dead = true;
+              break; // 비관통 투사체는 첫 명중 후 소멸
             }
-          } else {
-            this.combat.dealDamage(world, p.owner, tg, p.dmg, { kind: 'projectile' });
-            p.dead = true;
+          } else if (p.piercing && tg.index in p.hitCooldowns) {
+            delete p.hitCooldowns[tg.index];
           }
         }
       }
       world.projectiles = list.filter(p => !p.dead && p.life > 0);
+    }
+    // 투사체 넉백: knockback 수치가 있을 때 적용. knockbackDir:'down'이면 아래로
+    _knock(p, tg) {
+      if (!p.knockback) return;
+      if (p.knockbackDir === 'down') {
+        tg.vy += p.knockback;
+      } else if (p.knockbackDir === 'up') {
+        tg.vy -= p.knockback;
+      } else {
+        const d = U.dir(p, tg);
+        tg.vx += d.x * p.knockback; tg.vy += d.y * p.knockback;
+      }
     }
   }
 
@@ -918,6 +1023,7 @@ select.input{appearance:none}
 /* ===== js/simulation.js ===== */
 (function (BA) {
   'use strict';
+  const U = BA.Util;
 
   const CONFIG = { ARENA_W: 800, ARENA_H: 470, STEP: 1 / 60, MAX_STEPS: 60 * 90 };
 
@@ -941,21 +1047,43 @@ select.input{appearance:none}
       this.physics.update(w, dt);
       this.projectiles.update(w, dt);
       this.combat.tick(w, dt);
+
+      // 승리 판정 (멀티 배틀): 살아있는 팀이 1개 이하로 줄면 종료
+      const alive = w.fighters.filter(f => f.alive());
+      const aliveTeams = [...new Set(alive.map(f => f.team))];
+      if (aliveTeams.length <= 1 && !w.winner) {
+        if (alive.length >= 1) {
+          w.winner = alive.reduce((best, f) =>
+            (f.hp / f.maxHp) > (best.hp / best.maxHp) ? f : best, alive[0]);
+        } else {
+          w.winner = w.fighters[0];
+        }
+        w.winnerTeam = w.winner.team;
+      }
+
       if (this.stepCount >= CONFIG.MAX_STEPS && !w.winner) {
-        const [a, b] = w.fighters;
-        w.winner = (a.hp / a.maxHp) >= (b.hp / b.maxHp) ? a : b;
+        w.winner = w.fighters.reduce((best, f) =>
+          (f.hp / f.maxHp) > (best.hp / best.maxHp) ? f : best, w.fighters[0]);
+        w.winnerTeam = w.winner.team;
       }
     }
     drainEvents() { const e = this.world.events; this.world.events = []; return e; }
     isOver() { return !!this.world.winner; }
   }
 
-  function createSimulation(defA, defB, seedNum) {
+  function createSimulation(defs, seedNum, teams) {
+    // 하위호환: createSimulation(defA, defB, seed) 형태도 허용
+    if (!Array.isArray(defs)) {
+      defs = [arguments[0], arguments[1]];
+      seedNum = arguments[2];
+      teams = null;
+    }
     const rng = new BA.SeededRNG(seedNum);
+    const fighters = defs.map((d, i) => new BA.Fighter(d, i, i, teams ? teams[i] : i));
     const world = {
       rng,
       arena: { w: CONFIG.ARENA_W, h: CONFIG.ARENA_H },
-      fighters: [new BA.Fighter(defA, 0, 0), new BA.Fighter(defB, 1, 1)],
+      fighters,
       projectiles: [],
       zones: [],
       events: [],
@@ -975,7 +1103,7 @@ select.input{appearance:none}
     const ctx = {
       world,
       combat,
-      enemyOf: (f) => world.fighters[f.index === 0 ? 1 : 0],
+      enemyOf: (f) => U.nearestEnemy(world, f) || world.fighters.find(o => o !== f) || f,
       spawnProjectile: (p) => world.projectiles.push(new BA.Projectile(p))
     };
 
@@ -993,7 +1121,8 @@ select.input{appearance:none}
 
   const MatchCodec = {
     encode(match) {
-      const s = JSON.stringify({ v: 1, s: match.seed >>> 0, a: match.a, b: match.b });
+      const ids = match.ids || [match.a, match.b];
+      const s = JSON.stringify({ v: 2, s: match.seed >>> 0, f: ids });
       const b = btoa(unescape(encodeURIComponent(s)));
       return b.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
     },
@@ -1001,7 +1130,9 @@ select.input{appearance:none}
       let str = token.replace(/-/g, '+').replace(/_/g, '/');
       while (str.length % 4) str += '=';
       const o = JSON.parse(decodeURIComponent(escape(atob(str))));
-      return { version: o.v, seed: o.s >>> 0, a: o.a, b: o.b };
+      // v2: ids 배열, v1: a/b 호환
+      const ids = o.f ? o.f : [o.a, o.b];
+      return { version: o.v, seed: o.s >>> 0, ids };
     },
     toUrl(match, baseUrl) {
       const base = (baseUrl || (location.origin + location.pathname));
@@ -1258,6 +1389,77 @@ select.input{appearance:none}
           type: "armor",
           reduction: 0.15
         }
+      },
+      jeong: {
+        name: "정준혁",
+        image: null,
+        color: "#7cd64a",
+        maxHp: 130,
+        radius: 22,
+        baseSpeed: 320,
+        ultMax: 100,
+        ultOnHit: 11,
+        ultOnHurt: 11,
+        ultPerSec: 3,
+        basic: {
+          name: "발재간 오라",
+          icon: "🎶",
+          cooldown: 0.9,
+          slowPerStack: 0.06,
+          desc: "주변에 발재간을 흩뿌려 0.9초마다 사거리 안 모든 적을 때린다. 데미지는 처음엔 2로 미미하지만, 적이 맞을 때마다 스택이 쌓여 스택당 +2.5씩 증가(최대 10스택, 24.5). 스택이 쌓일수록 본인 이동속도는 스택당 6%씩 느려진다(최저 20%). 5초간 아무도 못 때리면 스택이 사라진다.",
+          actions: [
+            {
+              type: "aurapulse",
+              radius: 100,
+              damage: 2,
+              damagePerStack: 2.5,
+              maxStacks: 10,
+              stackGain: 1,
+              stackDuration: 5
+            }
+          ]
+        },
+        ultimate: {
+          name: "단무지 폭격",
+          icon: "🟡",
+          ultImage: "단무지 폭격!!!",
+          desc: "하늘에서 단무지가 우수수 떨어진다. 단무지 10개가 낙하하며 명중 시 각 16 데미지, 그리고 맞은 적을 아래로 강하게 짓누른다(넉백).",
+          actions: [
+            {
+              type: "projectile",
+              count: 10,
+              speed: 70,
+              radius: 18,
+              damage: 16,
+              bounces: 0,
+              spread: 75,
+              life: 4,
+              gravity: 520,
+              direction: "down",
+              knockback: 260,
+              knockbackDir: "down",
+              color: "#f3e04a",
+              text: "🟡"
+            }
+          ]
+        },
+        passive: {
+          name: "얍삽",
+          icon: "💨",
+          type: "dodge",
+          chance: 0.5,
+          desc: "날렵하게 피한다. 받는 모든 공격을 50% 확률로 완전히 회피한다."
+        },
+        _basicShinKick: {
+          name: "정강이 까기",
+          icon: "🦵",
+          cooldown: 0.45,
+          slowPerStack: 0.07,
+          desc: "근처 적의 정강이를 깐다. 때릴 때마다 스택이 쌓여 데미지가 4 → 스택당 +3.5씩 증가(최대 8스택, 28.5). 단 스택이 쌓일수록 본인 이동속도도 스택당 7%씩 느려진다. 5초간 안 때리면 스택은 모두 사라진다.",
+          actions: [
+            { type: "stackmelee", range: 62, damage: 4, damagePerStack: 3.5, maxStacks: 8, stackGain: 1, stackDuration: 5, knockback: 30 }
+          ]
+        }
       }
     }
   };
@@ -1347,8 +1549,12 @@ select.input{appearance:none}
     reset() {
       this.shake = 0; this.hitstop = 0;
       this.particles = []; this.floaters = []; this.rings = [];
-      this.fx = [{ flash: 0, pop: 0 }, { flash: 0, pop: 0 }];
+      this.fx = []; // 파이터 수에 맞춰 동적 확장
       this.ultBanner = null;
+    }
+    _fxOf(i) {
+      while (this.fx.length <= i) this.fx.push({ flash: 0, pop: 0 });
+      return this.fx[i];
     }
 
     consume(events) {
@@ -1359,7 +1565,14 @@ select.input{appearance:none}
           this.floaters.push({ x: e.x, y: e.y - 22, text: (e.crit ? '\u2605' : '') + e.dmg, color: e.crit ? '#ffd23f' : '#f4ead0', life: 0.85, vy: -50, big: !!e.crit });
           this.shake = Math.min(15, this.shake + (e.big ? 10 : 4));
           if (e.big) this.hitstop = Math.max(this.hitstop, 0.06);
-          const f = this.fx[e.victim]; f.flash = 0.16; f.pop = 0.3;
+          const f = this._fxOf(e.victim); f.flash = 0.16; f.pop = 0.3;
+        } else if (e.type === 'dodge') {
+          this.floaters.push({ x: e.x, y: e.y - 22, text: '회피!', color: '#9fe0ff', life: 0.8, vy: -42, big: false });
+        } else if (e.type === 'death') {
+          this._burst(e.x, e.y, e.color, 18);
+          this.rings.push({ x: e.x, y: e.y, r: 8, max: 70, life: 0.5, color: e.color });
+          this.floaters.push({ x: e.x, y: e.y - 24, text: 'K.O.', color: '#ff6b6b', life: 1.0, vy: -30, big: true });
+          this.shake = Math.min(18, this.shake + 9);
         } else if (e.type === 'heal') {
           this.floaters.push({ x: e.x, y: e.y - 20, text: '+' + e.amount, color: '#7fd86a', life: 0.85, vy: -44, big: false });
         } else if (e.type === 'merge') {
@@ -1369,7 +1582,7 @@ select.input{appearance:none}
           this.rings.push({ x: e.x, y: e.y, r: 10, max: e.radius, life: 0.4, color: e.color });
           this.shake = Math.min(16, this.shake + 7);
         } else if (e.type === 'shield') {
-          this.fx[e.index].pop = 0.28;
+          this._fxOf(e.index).pop = 0.28;
         } else if (e.type === 'ult') {
           this.ultBanner = { name: e.name, color: e.color, life: 1.1, ultImage: e.ultImage };
           this.shake = Math.min(18, this.shake + 11);
@@ -1537,7 +1750,7 @@ select.input{appearance:none}
 
     _fighter(b, f) {
       if (!f.alive()) return;
-      const fx = this.fx[f.index], r = f.r * (1 + fx.pop);
+      const fx = this._fxOf(f.index), r = f.r * (1 + fx.pop);
       b.save();
       b.beginPath(); b.arc(f.x, f.y, r, 0, Math.PI * 2); b.closePath(); b.clip();
       const img = this.images.get(f.image);
@@ -1555,6 +1768,17 @@ select.input{appearance:none}
       if (f.shield > 0) { b.lineWidth = 2; b.strokeStyle = '#dfe7ff'; b.beginPath(); b.arc(f.x, f.y, r + 5, 0, Math.PI * 2); b.stroke(); }
       b.lineWidth = 4; b.strokeStyle = '#15101f'; b.beginPath(); b.arc(f.x, f.y, r + 9, 0, Math.PI * 2); b.stroke();
       b.strokeStyle = f.color; b.beginPath(); b.arc(f.x, f.y, r + 9, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * (f.hp / f.maxHp)); b.stroke();
+      // 정강이 스택 표시
+      if (f.stacks > 0) {
+        b.save();
+        b.textAlign = 'center'; b.textBaseline = 'middle';
+        b.font = "bold 13px 'Galmuri11',monospace";
+        const sy = f.y - r - 16;
+        b.lineWidth = 4; b.strokeStyle = 'rgba(0,0,0,.85)';
+        b.strokeText('🎶x' + f.stacks, f.x, sy);
+        b.fillStyle = '#ffd84a'; b.fillText('🎶x' + f.stacks, f.x, sy);
+        b.restore();
+      }
     }
 
     _rings(b) {
@@ -1611,33 +1835,76 @@ select.input{appearance:none}
 
   class Hud {
     bindStatic(world) {
-      const [a, b] = world.fighters;
       const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
-      set('g1name', a.name); set('g2name', b.name);
-      set('n1', a.name); set('n2', b.name);
-      set('pn1', a.def.passive.name); set('pn2', b.def.passive.name);
-      set('pi1', a.def.passive.icon || '\u2728'); set('pi2', b.def.passive.icon || '\u2728');
-      document.getElementById('card1').style.setProperty('--accent', a.color);
-      document.getElementById('card2').style.setProperty('--accent', b.color);
-      document.getElementById('g1').style.setProperty('--accent', a.color);
-      document.getElementById('g2').style.setProperty('--accent', b.color);
+      world.fighters.forEach((f, i) => {
+        const n = i + 1;
+        set('g' + n + 'name', f.name);
+        set('n' + n, f.name);
+        set('pn' + n, f.def.passive.name); set('pi' + n, f.def.passive.icon || '\u2728');
+        set('un' + n, f.def.ultimate.name); set('ui' + n, f.def.ultimate.icon || '\u2728');
+        set('bn' + n, f.def.basic.name); set('bi' + n, f.def.basic.icon || '\u2694\ufe0f');
+        const card = document.getElementById('card' + n);
+        if (card) card.style.setProperty('--accent', f.color);
+        const g = document.getElementById('g' + n);
+        if (g) g.style.setProperty('--accent', f.color);
+        // hp바 색을 파이터 색으로
+        const hpf = document.getElementById('hpf' + n);
+        if (hpf) hpf.style.backgroundColor = f.color;
+        const gf = document.getElementById('g' + n + 'fill');
+        if (gf) gf.style.backgroundColor = f.color;
+        const box = document.getElementById('desc' + n);
+        if (box) box.innerHTML = '<div class="sdEmpty">스킬 아이콘을 누르면 설명이 나와요</div>';
+        ['b', 'u', 'p'].forEach(k => {
+          const c = document.getElementById('chip-' + k + n);
+          if (c) c.classList.remove('active');
+        });
+      });
+      this._fighters = world.fighters.slice();
+      this._wireSkillDesc();
+    }
+    _wireSkillDesc() {
+      if (this._wired) return; // DOM 재생성 시 App에서 _wired=false로 리셋
+      this._wired = true;
+      const self = this;
+      document.querySelectorAll('.chip[data-kind]').forEach(chip => {
+        chip.addEventListener('click', () => {
+          const cardN = chip.getAttribute('data-card');
+          const kind = chip.getAttribute('data-kind');
+          self._showDesc(parseInt(cardN, 10), kind, chip);
+        });
+      });
+    }
+    _showDesc(cardN, kind, chip) {
+      const f = this._fighters && this._fighters[cardN - 1];
+      if (!f) return;
+      const box = document.getElementById('desc' + cardN);
+      if (!box) return;
+      const src = kind === 'basic' ? f.def.basic : (kind === 'ult' ? f.def.ultimate : f.def.passive);
+      const tag = kind === 'basic' ? '기본공격' : (kind === 'ult' ? '궁극기' : '패시브');
+      const icon = src.icon || '✨';
+      const desc = src.desc || '설명이 없습니다.';
+      box.innerHTML = '<div class="sdTitle">' + icon + ' [' + tag + '] ' + src.name + '</div>' + desc;
+      ['b', 'u', 'p'].forEach(k => {
+        const c = document.getElementById('chip-' + k + cardN);
+        if (c) c.classList.remove('active');
+      });
+      chip.classList.add('active');
     }
     update(world) {
-      const [a, b] = world.fighters;
       const w = (id, p) => { const el = document.getElementById(id); if (el) el.style.width = p + '%'; };
       const t = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
-      w('hpf1', a.hp / a.maxHp * 100); w('hpf2', b.hp / b.maxHp * 100);
-      t('hp1', Math.ceil(a.hp) + ' / ' + a.maxHp); t('hp2', Math.ceil(b.hp) + ' / ' + b.maxHp);
-      w('sh1', a.shield / a.maxHp * 100); w('sh2', b.shield / b.maxHp * 100);
-      w('g1fill', a.ult / a.ultMax * 100); w('g2fill', b.ult / b.ultMax * 100);
-      
-      document.getElementById('g1').classList.toggle('ready', a.ult >= a.ultMax && a.morphTimer <= 0);
-      document.getElementById('g2').classList.toggle('ready', b.ult >= b.ultMax && b.morphTimer <= 0);
-      
-      t('bn1', a.def.basic.name); t('bn2', b.def.basic.name);
-      t('bi1', a.def.basic.icon || '\u2694\ufe0f'); t('bi2', b.def.basic.icon || '\u2694\ufe0f');
-
-      this._cd('cd1', a); this._cd('cd2', b);
+      world.fighters.forEach((f, i) => {
+        const n = i + 1;
+        w('hpf' + n, Math.max(0, f.hp / f.maxHp * 100));
+        t('hp' + n, Math.max(0, Math.ceil(f.hp)) + ' / ' + f.maxHp);
+        w('sh' + n, f.shield / f.maxHp * 100);
+        w('g' + n + 'fill', f.ult / f.ultMax * 100);
+        const g = document.getElementById('g' + n);
+        if (g) g.classList.toggle('ready', f.ult >= f.ultMax && f.morphTimer <= 0);
+        const card = document.getElementById('card' + n);
+        if (card) card.classList.toggle('dead', !f.alive());
+        this._cd('cd' + n, f);
+      });
     }
     _cd(id, f) {
       const el = document.getElementById(id); if (!el) return;
@@ -1707,12 +1974,21 @@ select.input{appearance:none}
         document.getElementById('seedInput').value = (Math.floor(Math.random() * 0xffffffff)) >>> 0;
       };
       document.getElementById('startBtn').onclick = () => this._operatorStart();
+      const addBtn = document.getElementById('addSlot');
+      if (addBtn) addBtn.onclick = () => {
+        if (!this.slotIds) this.slotIds = [];
+        if (this.slotIds.length >= 6) return;
+        const ids = this.repo.ids();
+        this.slotIds.push(ids[0] || '');
+        this._renderSlots();
+      };
       document.getElementById('logoutBtn').onclick = () => { this.auth.logout(); this._showView('login'); };
       document.getElementById('loadJsonBtn').onclick = () => {
         try {
           const json = JSON.parse(document.getElementById('charJson').value);
           this.repo.ingestJson(json);
-          this._fillCharSelects();
+          this.slotIds = null; // 새 데이터로 슬롯 기본값 재설정
+          this._renderSlots();
           this._flash('캐릭터 JSON을 불러왔습니다 (' + this.repo.ids().length + '종).', true);
         } catch (e) { this._flash('JSON 오류: ' + e.message, false); }
       };
@@ -1740,54 +2016,114 @@ select.input{appearance:none}
     }
 
     _enterAdmin() {
-      this._fillCharSelects();
+      if (!this.slotIds) this.slotIds = null; // 최초 진입 시 기본 채움
+      this._renderSlots();
       document.getElementById('charJson').value = JSON.stringify(BA.EMBEDDED_CHARACTERS, null, 2);
       document.getElementById('seedInput').value = (Math.floor(Math.random() * 0xffffffff)) >>> 0;
       document.getElementById('srcTag').textContent = this.repo.source === 'server' ? '서버 JSON' : '내장 데이터';
       this._showView('admin');
     }
 
-    _fillCharSelects() {
-      const opts = this.repo.all().map(c => '<option value="' + c.id + '">' + c.name + ' (' + c.id + ')</option>').join('');
-      const sa = document.getElementById('selA'), sb = document.getElementById('selB');
-      sa.innerHTML = opts; sb.innerHTML = opts;
+    _renderSlots() {
       const ids = this.repo.ids();
-      if (ids[0]) sa.value = ids[0];
-      if (ids[1]) sb.value = ids[1]; else if (ids[0]) sb.value = ids[0];
+      // 슬롯 상태 초기화: 기본 2명
+      if (!this.slotIds || this.slotIds.length < 2) {
+        this.slotIds = [ids[0] || '', ids[1] || ids[0] || ''];
+      }
+      const list = document.getElementById('slotList');
+      const optsFor = (sel) => this.repo.all()
+        .map(c => '<option value="' + c.id + '"' + (c.id === sel ? ' selected' : '') + '>' + c.name + ' (' + c.id + ')</option>').join('');
+      list.innerHTML = this.slotIds.map((sid, i) =>
+        '<div class="slotRow">' +
+          '<span class="badge">FIGHTER ' + (i + 1) + '</span>' +
+          '<select class="input slotSel" data-i="' + i + '">' + optsFor(sid) + '</select>' +
+          (this.slotIds.length > 2 ? '<button class="btn ghost sm del" data-i="' + i + '">✕</button>' : '') +
+        '</div>'
+      ).join('');
+
+      list.querySelectorAll('.slotSel').forEach(sel => {
+        sel.onchange = () => { this.slotIds[parseInt(sel.dataset.i, 10)] = sel.value; };
+      });
+      list.querySelectorAll('.del').forEach(btn => {
+        btn.onclick = () => {
+          const i = parseInt(btn.dataset.i, 10);
+          this.slotIds.splice(i, 1);
+          this._renderSlots();
+        };
+      });
+      document.getElementById('slotCount').textContent = this.slotIds.length + '명';
+      const addBtn = document.getElementById('addSlot');
+      addBtn.disabled = this.slotIds.length >= 6;
+      addBtn.style.opacity = this.slotIds.length >= 6 ? 0.4 : 1;
     }
 
     _setHash(hash) { try { history.replaceState(null, '', hash); } catch (e) {} }
 
     _operatorStart() {
-      const a = document.getElementById('selA').value;
-      const b = document.getElementById('selB').value;
+      const ids = (this.slotIds || []).filter(Boolean);
+      if (ids.length < 2) { this._flash('파이터를 2명 이상 선택하세요.', false); return; }
       let seed = BA.SeededRNG.toSeed(document.getElementById('seedInput').value || Date.now());
       this.isReplay = false;
       document.getElementById('replayBadge').style.display = 'none';
-      this._startMatch({ seed, a, b }, true);
+      this._startMatch({ seed, ids }, true);
       this._showView('battle');
     }
 
     _startMatch(match, autoplay) {
-      const defA = this.repo.get(match.a), defB = this.repo.get(match.b);
-      if (!defA || !defB) {
+      const ids = match.ids || [match.a, match.b];
+      const defs = ids.map(id => this.repo.get(id));
+      if (defs.some(d => !d) || defs.length < 2) {
         this._showView(this.auth.isOperator() ? 'admin' : 'login');
-        this._flash('캐릭터 id를 찾을 수 없습니다: ' + match.a + ', ' + match.b, false);
+        this._flash('캐릭터 id를 찾을 수 없습니다: ' + ids.join(', '), false);
         return;
       }
-      this.currentMatch = { seed: match.seed >>> 0, a: match.a, b: match.b };
-      this.sim = BA.createSimulation(defA, defB, this.currentMatch.seed);
+      this.currentMatch = { seed: match.seed >>> 0, ids };
+      this.sim = BA.createSimulation(defs, this.currentMatch.seed); // teams=null → 전원 적대
+      this._buildBattleDom(this.sim.world);
       this.renderer.reset();
       this.hud.bindStatic(this.sim.world);
       this.hud.update(this.sim.world);
       this.acc = 0; this.last = 0;
       this.playing = !!autoplay;
-      
+
       document.getElementById('btnBack').style.display = this.isReplay ? 'none' : 'inline-block';
       document.getElementById('banner').classList.remove('show');
       document.getElementById('seedLabel').textContent = 'SEED ' + this.currentMatch.seed;
       this._syncPauseBtn();
       this._syncSpeedBtn();
+    }
+
+    // 전투 화면의 게이지/카드 DOM을 파이터 수에 맞춰 생성
+    _buildBattleDom(world) {
+      const gauges = document.getElementById('gauges');
+      const fighters = document.getElementById('fighters');
+      gauges.innerHTML = '';
+      fighters.innerHTML = '';
+      world.fighters.forEach((f, i) => {
+        const n = i + 1;
+        const g = document.createElement('div');
+        g.className = 'gauge g' + n;
+        g.id = 'g' + n;
+        g.innerHTML = '<div class="gh"><b id="g' + n + 'name">' + f.name + '</b><span class="ult">ULT</span></div>' +
+          '<div class="gbar"><div class="gfill" id="g' + n + 'fill"></div></div>';
+        gauges.appendChild(g);
+
+        const card = document.createElement('div');
+        card.className = 'card c' + n;
+        card.id = 'card' + n;
+        card.innerHTML =
+          '<div class="nameRow"><span class="cname" id="n' + n + '">' + f.name + '</span><span class="chp" id="hp' + n + '">- / -</span></div>' +
+          '<div class="hpbar"><div class="hpfill" id="hpf' + n + '"></div><div class="shield" id="sh' + n + '"></div></div>' +
+          '<div class="skills">' +
+            '<div class="chip" id="chip-b' + n + '" data-card="' + n + '" data-kind="basic"><span class="ic" id="bi' + n + '">⚔️</span><div style="min-width:0"><div class="tag">기본공격</div><div class="sk" id="bn' + n + '">-</div></div><div class="cd" id="cd' + n + '" style="display:none"></div></div>' +
+            '<div class="chip" id="chip-u' + n + '" data-card="' + n + '" data-kind="ult"><span class="ic" id="ui' + n + '">✨</span><div style="min-width:0"><div class="tag">궁극기</div><div class="sk" id="un' + n + '">-</div></div></div>' +
+            '<div class="chip" id="chip-p' + n + '" data-card="' + n + '" data-kind="passive"><span class="ic" id="pi' + n + '">✨</span><div style="min-width:0"><div class="tag">패시브</div><div class="sk" id="pn' + n + '">-</div></div></div>' +
+          '</div>' +
+          '<div class="skillDesc" id="desc' + n + '"><div class="sdEmpty">스킬 아이콘을 누르면 설명이 나와요</div></div>';
+        fighters.appendChild(card);
+      });
+      // 새 DOM이 생겼으니 Hud 클릭 바인딩 재설정
+      this.hud._wired = false;
     }
 
     _loop(ts) {
