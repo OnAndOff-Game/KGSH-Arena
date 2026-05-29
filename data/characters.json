@@ -212,7 +212,7 @@
             "type": "melee",
             "range": 70,
             "damage": 7,
-            "knockback": 150
+            "knockback": 50
           },
           {
             "type": "wait",
@@ -231,7 +231,7 @@
             "type": "melee",
             "range": 70,
             "damage": 11,
-            "knockback": 250
+            "knockback": 100
           }
         ]
       },
