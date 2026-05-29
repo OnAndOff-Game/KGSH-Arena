@@ -243,7 +243,7 @@
           {
             "type": "projectile",
             "count": 1,
-            "speed": 50,
+            "speed": 25,
             "radius": 150,
             "damage": 5,
             "bounces": 1,
