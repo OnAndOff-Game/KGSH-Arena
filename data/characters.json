@@ -244,7 +244,7 @@
             "type": "projectile",
             "count": 1,
             "speed": 50,
-            "radius": 2000,
+            "radius": 500,
             "damage": 1,
             "bounces": 1,
             "tickRate": 0.01,
