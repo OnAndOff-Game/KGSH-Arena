@@ -247,7 +247,7 @@
             "radius": 150,
             "damage": 0.5,
             "bounces": 1,
-            "tickRate": 0.01,
+            "tickRate": 0.05,
             "life": 10,
             "text": "🌀",
             "image": "images/drillprojectile.png",
