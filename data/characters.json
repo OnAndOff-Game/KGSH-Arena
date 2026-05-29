@@ -244,14 +244,15 @@
             "type": "projectile",
             "count": 1,
             "speed": 50,
-            "radius": 4000,
+            "radius": 2000,
             "damage": 1,
+            "bounces": 1,
             "tickRate": 0.01,
             "life": 10,
-            "text": "",
+            "text": "🌀",
             "image": "images/drillprojectile.png",
             "piercing": true,
-            "slowMult": 0.1,
+            "slowMult": 0.3,
             "color": "#1e90ff"
           }
         ]
