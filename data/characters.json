@@ -251,7 +251,7 @@
             "text": "",
             "image": "images/drillprojectile.png",
             "piercing": true,
-            "slowMult": 0.3,
+            "slowMult": 0.1,
             "color": "#1e90ff"
           }
         ]
