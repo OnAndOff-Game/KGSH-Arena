@@ -245,7 +245,7 @@
             "count": 1,
             "speed": 100,
             "radius": 150,
-            "damage": 2,
+            "damage": 0.5,
             "bounces": 1,
             "tickRate": 0.01,
             "life": 10,

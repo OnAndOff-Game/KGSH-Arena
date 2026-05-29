@@ -380,6 +380,7 @@ select.input{appearance:none}
       this.piercing = !!p.piercing; // 드릴 관통 속성
       this.slowMult = p.slowMult || 1.0; // 관통 타격시 적에게 거는 슬로우 배율
       this.selfSlowMult = p.selfSlowMult || 1.0; // 적과 닿아 있는 동안 투사체 본인 이동속도 배율
+      this.tickRate = p.tickRate || 0.3; // 관통 투사체 틱 데미지 간격(초)
       this.hitCooldowns = {};       // 관통 틱 적용을 위한 내부 타겟별 쿨다운 맵
       this.dead = false;
     }
@@ -470,7 +471,8 @@ select.input{appearance:none}
         image: action.image || null,
         piercing: !!action.piercing,
         slowMult: action.slowMult || 1.0,
-        selfSlowMult: action.selfSlowMult || 1.0
+        selfSlowMult: action.selfSlowMult || 1.0,
+        tickRate: action.tickRate || 0.3
       });
     }
   }));
@@ -834,7 +836,7 @@ select.input{appearance:none}
             // 드릴 관통: 타겟 쿨다운 확인 후 주기적으로 틱 데미지와 이속 감소 디버프 적용
             if (!(tg.index in p.hitCooldowns) || p.hitCooldowns[tg.index] <= 0) {
               this.combat.dealDamage(world, p.owner, tg, p.dmg, { kind: 'projectile' });
-              p.hitCooldowns[tg.index] = 0.3; // 0.3초마다 틱 타격
+              p.hitCooldowns[tg.index] = p.tickRate; // tickRate초마다 틱 타격
 
               // 70% 감속 디버프 적용 (slowMult: 0.3 = 70% 속도 감소)
               let exists = false;
