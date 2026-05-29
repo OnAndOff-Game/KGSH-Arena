@@ -1,0 +1,267 @@
+{
+  "version": 1,
+  "characters": {
+    "choi": {
+      "name": "최일우",
+      "image": "images/choi.jpg",
+      "color": "#8b4513",
+      "maxHp": 320,
+      "radius": 46,
+      "baseSpeed": 75,
+      "ultMax": 100,
+      "ultOnHit": 12,
+      "ultOnHurt": 10,
+      "ultPerSec": 2,
+      "basic": {
+        "name": "면상에 똥싸기",
+        "icon": "💩",
+        "cooldown": 2.1,
+        "actions": [
+          {
+            "type": "projectile",
+            "count": 3,
+            "speed": 180,
+            "radius": 14,
+            "damage": 14,
+            "bounces": 1,
+            "mergeable": false,
+            "spread": 35,
+            "life": 3,
+            "gravity": 450,
+            "direction": "down",
+            "color": "#5c3317",
+            "text": "💩"
+          }
+        ]
+      },
+      "ultimate": {
+        "name": "마운자로 처방!",
+        "icon": "💊",
+        "ultImage": "💊마운자로!!!",
+        "actions": [
+          {
+            "type": "morph",
+            "duration": 6,
+            "radius": 16,
+            "speed": 380,
+            "color": "#f0e68c",
+            "basic": {
+              "name": "무자비한 난타",
+              "icon": "🥊",
+              "cooldown": 0.35,
+              "actions": [
+                {
+                  "type": "dash",
+                  "duration": 0.1,
+                  "power": 1200
+                },
+                {
+                  "type": "melee",
+                  "range": 65,
+                  "damage": 9,
+                  "knockback": 150
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "passive": {
+        "name": "지방 갑옷",
+        "icon": "🥓",
+        "type": "armor",
+        "reduction": 0.25
+      }
+    },
+    "jo": {
+      "name": "조건상",
+      "image": "images/jo.png",
+      "color": "#a3a3a3",
+      "maxHp": 150,
+      "radius": 18,
+      "baseSpeed": 190,
+      "ultMax": 100,
+      "ultOnHit": 10,
+      "ultOnHurt": 12,
+      "ultPerSec": 3,
+      "basic": {
+        "name": "뼈다귀 던지기",
+        "icon": "🦴",
+        "cooldown": 1.1,
+        "actions": [
+          {
+            "type": "projectile",
+            "count": 1,
+            "speed": 300,
+            "radius": 16,
+            "damage": 9,
+            "bounces": 4,
+            "spread": 0,
+            "life": 4,
+            "text": "🦴"
+          }
+        ]
+      },
+      "ultimate": {
+        "name": "인스타에 고양이 팔아먹기",
+        "icon": "🐈",
+        "ultImage": "인스타에 고양이 팔아먹기!!",
+        "actions": [
+          {
+            "type": "projectile",
+            "count": 4,
+            "speed": 220,
+            "radius": 24,
+            "damage": 15,
+            "bounces": 3,
+            "homing": 0.9,
+            "spread": 60,
+            "life": 6,
+            "text": "🐈"
+          }
+        ]
+      },
+      "passive": {
+        "name": "뼈갑옷",
+        "icon": "☠️",
+        "type": "thorns",
+        "ratio": 0.1
+      }
+    },
+    "oh": {
+      "name": "오혜성",
+      "image": "images/oh.png",
+      "color": "#4f4f4f",
+      "maxHp": 180,
+      "radius": 26,
+      "baseSpeed": 345,
+      "ultMax": 200,
+      "ultOnHit": 10,
+      "ultOnHurt": 8,
+      "ultPerSec": 3,
+      "basic": {
+        "name": "크롬하츠 링",
+        "icon": "💍",
+        "cooldown": 3.5,
+        "actions": [
+          {
+            "type": "orbit",
+            "count": 2,
+            "radius": 55,
+            "speed": 14,
+            "damage": 10,
+            "life": 3.0,
+            "text": "💍",
+            "image": "images/ring.png",
+            "color": "#d1d1d1"
+          }
+        ]
+      },
+      "ultimate": {
+        "name": "#크롬하츠...",
+        "icon": "✝️",
+        "ultImage": "#CHROMEHEARTS...",
+        "actions": [
+          {
+            "type": "zone",
+            "duration": 5.0,
+            "radius": 160,
+            "damage": 1,
+            "tickRate": 0.05,
+            "speedMult": 0.1,
+            "atTarget": true,
+            "color": "#ffffff",
+            "text": "#크롬하츠...",
+            "image": "images/ch.png"
+          }
+        ]
+      },
+      "passive": {
+        "name": "명품방패",
+        "icon": "🛡️",
+        "type": "regen",
+        "perSec": 4
+      }
+    },
+        "kim": {
+      "name": "김성주",
+      "image": "images/kim.jpg",
+      "color": "#1e90ff",
+      "maxHp": 210,
+      "radius": 24,
+      "baseSpeed": 140,
+      "ultMax": 100,
+      "ultOnHit": 11,
+      "ultOnHurt": 9,
+      "ultPerSec": 3,
+      "basic": {
+        "name": "이크에크",
+        "icon": "🥋",
+        "cooldown": 1.6,
+        "actions": [
+          {
+            "type": "speak",
+            "text": "이크!"
+          },
+          {
+            "type": "dash",
+            "duration": 0.12,
+            "power": 800
+          },
+          {
+            "type": "melee",
+            "range": 70,
+            "damage": 7,
+            "knockback": 150
+          },
+          {
+            "type": "wait",
+            "duration": 0.2
+          },
+          {
+            "type": "speak",
+            "text": "에크!"
+          },
+          {
+            "type": "dash",
+            "duration": 0.12,
+            "power": 1000
+          },
+          {
+            "type": "melee",
+            "range": 70,
+            "damage": 11,
+            "knockback": 250
+          }
+        ]
+      },
+      "ultimate": {
+        "name": "기가 드릴!!!",
+        "icon": "🌀",
+        "ultImage": "images/kimdrill.png",
+        "actions": [
+          {
+            "type": "projectile",
+            "count": 1,
+            "speed": 50,
+            "radius": 80,
+            "damage": 2,
+            "bounces": 1,
+            "life": 4.5,
+            "text": "🌀",
+            "image": "images/drillprojectile.png",
+            "piercing": true,
+            "slowMult": 0.3,
+            "color": "#1e90ff"
+          }
+        ]
+      },
+      "passive": {
+        "name": "유연한 몸짓",
+        "icon": "🥋",
+        "type": "armor",
+        "reduction": 0.15
+      }
+    }
+  }
+}
