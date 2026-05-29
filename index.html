@@ -378,7 +378,8 @@ select.input{appearance:none}
       this.image = p.image || null; // 이미지 전용 주소
       this.orbit = p.orbit || null; // 공전 정보 { radius, angle, speed, hitCooldown }
       this.piercing = !!p.piercing; // 드릴 관통 속성
-      this.slowMult = p.slowMult || 1.0; // 관통 타격시 슬로우 배율
+      this.slowMult = p.slowMult || 1.0; // 관통 타격시 적에게 거는 슬로우 배율
+      this.selfSlowMult = p.selfSlowMult || 1.0; // 적과 닿아 있는 동안 투사체 본인 이동속도 배율
       this.hitCooldowns = {};       // 관통 틱 적용을 위한 내부 타겟별 쿨다운 맵
       this.dead = false;
     }
@@ -468,7 +469,8 @@ select.input{appearance:none}
         text: action.text || null,
         image: action.image || null,
         piercing: !!action.piercing,
-        slowMult: action.slowMult || 1.0
+        slowMult: action.slowMult || 1.0,
+        selfSlowMult: action.selfSlowMult || 1.0
       });
     }
   }));
@@ -803,7 +805,16 @@ select.input{appearance:none}
             p.vy += (d.y * sp - p.vy) * p.homing * dt * 4;
           }
           p.vy += p.gravity * dt;
-          p.x += p.vx * dt; p.y += p.vy * dt;
+
+          // 적과 닿아 있는 동안 투사체 본인 이동속도 감소 (드릴이 적에 박히면 느려지고, 벗어나면 원래 속도)
+          let moveMult = 1.0;
+          if (p.selfSlowMult < 1.0) {
+            const ct = world.fighters[p.owner.index === 0 ? 1 : 0];
+            if (ct.alive() && U.dist(p, ct) < p.r + ct.r) {
+              moveMult = p.selfSlowMult;
+            }
+          }
+          p.x += p.vx * dt * moveMult; p.y += p.vy * dt * moveMult;
 
           if (p.x < p.r) { p.x = p.r; p.vx = Math.abs(p.vx); p.bounces--; }
           else if (p.x > A.w - p.r) { p.x = A.w - p.r; p.vx = -Math.abs(p.vx); p.bounces--; }

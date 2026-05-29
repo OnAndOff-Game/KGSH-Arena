@@ -212,7 +212,7 @@
             "type": "melee",
             "range": 70,
             "damage": 7,
-            "knockback": 50
+            "knockback": 10
           },
           {
             "type": "wait",
@@ -231,7 +231,7 @@
             "type": "melee",
             "range": 70,
             "damage": 11,
-            "knockback": 100
+            "knockback": 10
           }
         ]
       },
@@ -243,9 +243,9 @@
           {
             "type": "projectile",
             "count": 1,
-            "speed": 25,
+            "speed": 100,
             "radius": 150,
-            "damage": 2.5,
+            "damage": 2,
             "bounces": 1,
             "tickRate": 0.01,
             "life": 10,
@@ -253,6 +253,7 @@
             "image": "images/drillprojectile.png",
             "piercing": true,
             "slowMult": 0.3,
+            "selfSlowMult": 0.1,
             "color": "#1e90ff"
           }
         ]
