@@ -190,7 +190,7 @@
       "maxHp": 210,
       "radius": 24,
       "baseSpeed": 140,
-      "ultMax": 50,
+      "ultMax": 100,
       "ultOnHit": 11,
       "ultOnHurt": 9,
       "ultPerSec": 3,
@@ -243,7 +243,7 @@
           {
             "type": "projectile",
             "count": 1,
-            "speed": 100,
+            "speed": 500,
             "radius": 150,
             "damage": 0.5,
             "bounces": 1,
@@ -252,7 +252,7 @@
             "text": "🌀",
             "image": "images/drillprojectile.png",
             "piercing": true,
-            "slowMult": 0.3,
+            "slowMult": 0.1,
             "selfSlowMult": 0.1,
             "color": "#1e90ff"
           }
