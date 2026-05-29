@@ -190,8 +190,8 @@
       "maxHp": 210,
       "radius": 24,
       "baseSpeed": 140,
-      "ultMax": 100,
-      "ultOnHit": 11,
+      "ultMax": 130,
+      "ultOnHit": 9,
       "ultOnHurt": 9,
       "ultPerSec": 3,
       "basic": {
