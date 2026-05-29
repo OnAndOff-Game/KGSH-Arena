@@ -285,7 +285,7 @@
         "actions": [
           {
             "type": "aurapulse",
-            "radius": 100,
+            "radius": 200,
             "damage": 2,
             "damagePerStack": 2.5,
             "maxStacks": 10,
