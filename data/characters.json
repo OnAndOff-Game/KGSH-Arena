@@ -277,7 +277,7 @@
       "ultOnHurt": 11,
       "ultPerSec": 3,
       "basic": {
-        "name": "혁바드",
+        "name": "(혁바드 연주)",
         "icon": "🎶",
         "cooldown": 0.9,
         "slowPerStack": 0.06,
