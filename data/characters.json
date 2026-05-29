@@ -246,7 +246,7 @@
             "speed": 500,
             "radius": 150,
             "damage": 0.5,
-            "bounces": 1,
+            "bounces": 2,
             "tickRate": 0.05,
             "life": 10,
             "text": "🌀",
