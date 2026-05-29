@@ -486,8 +486,24 @@ select.input{appearance:none}
       f.stackTimer = action.stackDuration || 5;
     }
     const dmg = (action.damage || 2) + (Math.max(0, (f.stacks || 0) - 1)) * (action.damagePerStack || 2.5);
+
+    // 적 이동속도 감소(디버프): 스택이 쌓일수록 연주에 홀린 적이 더 느려진다.
+    // (예전엔 본인이 느려졌지만, 이제는 사거리 안 적에게 슬로우를 건다)
+    const slowPer = action.enemySlowPerStack || 0;
+    const slowMult = slowPer > 0
+      ? Math.max(action.enemySlowFloor || 0.4, 1 - slowPer * (f.stacks || 0))
+      : 1;
+    const slowDur = action.slowDuration || 1.1;
+
     for (const e of enemies) {
       ctx.combat.dealDamage(ctx.world, f, e, dmg, { kind: 'aoe' });
+      if (slowPer > 0) {
+        let refreshed = false;
+        for (const b of e.buffs) {
+          if (b.source === 'bardslow') { b.t = slowDur; b.mult = slowMult; refreshed = true; break; }
+        }
+        if (!refreshed) e.buffs.push({ stat: 'speed', mult: slowMult, t: slowDur, source: 'bardslow' });
+      }
     }
   }));
 
@@ -664,6 +680,36 @@ select.input{appearance:none}
   // 11) 대사/말하기 액션 (Speak)
   ActionRegistry.register('speak', instant(function (ctx, action, f) {
     ctx.world.events.push({ type: 'cast', x: f.x, y: f.y, text: action.text || '', color: f.color });
+  }));
+
+  // 11-b) 스택 합산 폭발 (정준혁 궁): 그동안 연주로 쌓아온 스택을 한 방에 합산해 터뜨린다
+  //  - 데미지 = baseDamage + 현재 스택 * damagePerStack
+  //  - aoe:true면 사거리 안 적 전체, 아니면 가장 가까운 적 1명에게
+  //  - consume!==false면 발동 후 스택을 0으로 초기화
+  ActionRegistry.register('stackdetonate', instant(function (ctx, action, f) {
+    const stacks = f.stacks || 0;
+    const dmg = (action.baseDamage || 0) + stacks * (action.damagePerStack || 8);
+    const radius = action.radius || 160;
+
+    ctx.world.events.push({ type: 'aoe', x: f.x, y: f.y, radius, color: action.color || f.color });
+    ctx.world.events.push({ type: 'cast', x: f.x, y: f.y, text: stacks + '스택 폭발!', color: action.color || f.color });
+
+    const applyHit = (e) => {
+      if (!e || !e.alive()) return;
+      ctx.combat.dealDamage(ctx.world, f, e, dmg, { kind: 'aoe' });
+      if (action.knockback) { const d = U.dir(f, e); e.vx += d.x * action.knockback; e.vy += d.y * action.knockback; }
+    };
+
+    if (action.aoe) {
+      for (const e of U.aliveEnemies(ctx.world, f)) {
+        if (U.dist(f, e) <= radius + e.r) applyHit(e);
+      }
+    } else {
+      const e = ctx.enemyOf(f);
+      if (e && U.dist(f, e) <= radius + e.r) applyHit(e);
+    }
+
+    if (action.consume !== false) { f.stacks = 0; f.stackTimer = 0; }
   }));
 
   class SkillRunner {
@@ -1394,7 +1440,7 @@ select.input{appearance:none}
         name: "정준혁",
         image: null,
         color: "#7cd64a",
-        maxHp: 130,
+        maxHp: 50,
         radius: 22,
         baseSpeed: 320,
         ultMax: 100,
@@ -1402,45 +1448,34 @@ select.input{appearance:none}
         ultOnHurt: 11,
         ultPerSec: 3,
         basic: {
-          name: "발재간 오라",
+          name: "(혁바드 연주)",
           icon: "🎶",
           cooldown: 0.9,
-          slowPerStack: 0.06,
-          desc: "주변에 발재간을 흩뿌려 0.9초마다 사거리 안 모든 적을 때린다. 데미지는 처음엔 2로 미미하지만, 적이 맞을 때마다 스택이 쌓여 스택당 +2.5씩 증가(최대 10스택, 24.5). 스택이 쌓일수록 본인 이동속도는 스택당 6%씩 느려진다(최저 20%). 5초간 아무도 못 때리면 스택이 사라진다.",
+          desc: "기타를 쳐서 0.9초마다 사거리(200) 안 모든 적을 때린다. 데미지는 처음엔 2로 미미하지만 적이 맞을 때마다 스택이 쌓여 스택당 +2.5씩 증가(최대 10스택, 24.5). 스택이 쌓일수록 연주에 홀린 적들의 이동속도가 스택당 5%씩 느려진다(최저 50%). 5초간 아무도 못 때리면 스택이 사라진다.",
           actions: [
             {
               type: "aurapulse",
-              radius: 100,
+              radius: 200,
               damage: 2,
               damagePerStack: 2.5,
               maxStacks: 10,
               stackGain: 1,
-              stackDuration: 5
+              stackDuration: 5,
+              enemySlowPerStack: 0.05,
+              enemySlowFloor: 0.5,
+              slowDuration: 1.1
             }
           ]
         },
         ultimate: {
-          name: "단무지 폭격",
-          icon: "🟡",
-          ultImage: "단무지 폭격!!!",
-          desc: "하늘에서 단무지가 우수수 떨어진다. 단무지 10개가 낙하하며 명중 시 각 16 데미지, 그리고 맞은 적을 아래로 강하게 짓누른다(넉백).",
+          name: "마지막 한 소절 (스택 전부 터뜨리기)",
+          icon: "🎸",
+          ultImage: "마지막 한 소절!!! 🎸💥",
+          desc: "그동안 연주로 쌓아온 스택을 한 방에 폭발시킨다. 가장 가까운 적에게 순간이동하듯 파고든 뒤, 기본 10 + 보유 스택당 9의 합산 데미지를 한 번에 꽂는다(10스택이면 100!). 터뜨린 스택은 0으로 초기화되고 강한 넉백으로 날려버린다.",
           actions: [
-            {
-              type: "projectile",
-              count: 10,
-              speed: 70,
-              radius: 18,
-              damage: 16,
-              bounces: 0,
-              spread: 75,
-              life: 4,
-              gravity: 520,
-              direction: "down",
-              knockback: 260,
-              knockbackDir: "down",
-              color: "#f3e04a",
-              text: "🟡"
-            }
+            { type: "speak", text: "이게 내 마지막 한 소절이다 🎸" },
+            { type: "dash", duration: 0.1, power: 1500 },
+            { type: "stackdetonate", baseDamage: 10, damagePerStack: 9, radius: 160, knockback: 300, color: "#7cd64a" }
           ]
         },
         passive: {

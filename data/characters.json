@@ -183,7 +183,7 @@
         "perSec": 2
       }
     },
-        "kim": {
+    "kim": {
       "name": "김성주",
       "image": "images/kim.jpg",
       "color": "#1e90ff",
@@ -265,11 +265,11 @@
         "reduction": 0.15
       }
     },
-       "jeong": {
+    "jeong": {
       "name": "정준혁",
       "image": "images/jj.jpg",
       "color": "#7cd64a",
-      "maxHp": 50,
+      "maxHp": 60,
       "radius": 22,
       "baseSpeed": 320,
       "ultMax": 100,
@@ -279,42 +279,45 @@
       "basic": {
         "name": "(혁바드 연주)",
         "icon": "🎶",
-        "cooldown": 0.9,
-        "slowPerStack": 0.06,
-        "desc": "기타를 쳐서 0.9초마다 사거리 안 모든 적을 때린다. 데미지는 처음엔 2로 미미하지만, 적이 맞을 때마다 스택이 쌓여 스택당 +2.5씩 증가(최대 10스택, 24.5). 스택이 쌓일수록 본인 이동속도는 스택당 6%씩 느려진다(최저 20%). 5초간 아무도 못 때리면 스택이 사라진다.",
+        "cooldown": 0.4,
+        "desc": "기타를 쳐서 0.4초마다 사거리(200) 안 모든 적을 때린다. 데미지는 처음엔 1로 미미하지만 적이 맞을 때마다 스택이 쌓여 스택당 +2씩 증가(최대 20스택, 24.5). 스택이 쌓일수록 연주에 홀린 적들의 이동속도가 스택당 5%씩 느려진다(최저 50%). 5초간 아무도 못 때리면 스택이 사라진다.",
         "actions": [
           {
             "type": "aurapulse",
             "radius": 200,
-            "damage": 2,
-            "damagePerStack": 2.5,
-            "maxStacks": 10,
+            "damage": 1,
+            "damagePerStack": 2,
+            "maxStacks": 20,
             "stackGain": 1,
-            "stackDuration": 5
+            "stackDuration": 5,
+            "enemySlowPerStack": 0.05,
+            "enemySlowFloor": 0.5,
+            "slowDuration": 1.1
           }
         ]
       },
       "ultimate": {
-        "name": "야, 너 아까 치킨무 더 먹고 싶다고 징징댔잖아. 시발아 웃어, 좋은 날이잖아 ㅋㅋㅋㅋ",
-        "icon": "🟡",
-        "ultImage": "",
-        "desc": "하늘에서 치킨무가 우수수 떨어진다. 치킨무 10개가 낙하하며 명중 시 각 16 데미지, 그리고 맞은 적을 아래로 강하게 짓누른다(넉백).",
+        "name": "마지막 한 소절 (스택 전부 터뜨리기)",
+        "icon": "🎸",
+        "ultImage": "마지막 한 소절!!! 🎸💥",
+        "desc": "그동안 연주로 쌓아온 스택을 한 방에 폭발시킨다. 가장 가까운 적에게 순간이동하듯 파고든 뒤, 기본 10 + 보유 스택당 9의 합산 데미지를 한 번에 꽂는다(10스택이면 100!). 터뜨린 스택은 0으로 초기화되고 강한 넉백으로 날려버린다.",
         "actions": [
           {
-            "type": "projectile",
-            "count": 10,
-            "speed": 70,
-            "radius": 18,
-            "damage": 16,
-            "bounces": 0,
-            "spread": 75,
-            "life": 4,
-            "gravity": 520,
-            "direction": "down",
-            "knockback": 260,
-            "knockbackDir": "down",
-            "color": "#f3e04a",
-            "text": "🟡"
+            "type": "speak",
+            "text": "이게 내 마지막 한 소절이다 🎸"
+          },
+          {
+            "type": "dash",
+            "duration": 0.1,
+            "power": 1500
+          },
+          {
+            "type": "stackdetonate",
+            "baseDamage": 10,
+            "damagePerStack": 9,
+            "radius": 160,
+            "knockback": 300,
+            "color": "#7cd64a"
           }
         ]
       },
@@ -324,6 +327,72 @@
         "type": "dodge",
         "chance": 0.5,
         "desc": "날렵하게 피한다. 받는 모든 공격을 50% 확률로 완전히 회피한다."
+      }
+    },
+    "hwang": {
+      "name": "황성현",
+      "image": "images/hwang.jpg",
+      "color": "#c9a227",
+      "maxHp": 100,
+      "radius": 28,
+      "baseSpeed": 130,
+      "ultMax": 100,
+      "ultOnHit": 9,
+      "ultOnHurt": 11,
+      "ultPerSec": 2.5,
+      "basic": {
+        "name": "오빠랑 기도하러 갈까?",
+        "icon": "🙏",
+        "cooldown": 2.4,
+        "desc": "다정하게 손을 잡아 끌어당긴다. 가장 가까운 적을 1.4초간 본인 쪽으로 끌어오며 0.22초마다 4씩 '기도 헌신' 피해를 준다(흡혈 적용).",
+        "actions": [
+          {
+            "type": "speak",
+            "text": "오빠랑 기도하러 갈까? 🙏"
+          },
+          {
+            "type": "tether",
+            "duration": 1.4,
+            "pull": 720,
+            "tickDamage": 4,
+            "tickRate": 0.22
+          }
+        ]
+      },
+      "ultimate": {
+        "name": "통성기도 가즈아!!! 주여~~~",
+        "icon": "🔥",
+        "ultImage": "주여~~~ 통성기도 가즈아!!! 🔥",
+        "desc": "갑자기 부흥회를 연다. 주님의 보호하심(보호막 60, 5초)을 두르고 자기 주변에 '통성기도 장판'을 깐다. 5초간 범위 안 모든 적을 35% 속도로 묶어두고 0.15초마다 2씩 갉아먹으며, 그 피해의 25%를 본인이 흡수해 은혜 충만해진다(흡혈). 헌금함은 비워지지 않는다.",
+        "actions": [
+          {
+            "type": "speak",
+            "text": "주여~~~ 🔥"
+          },
+          {
+            "type": "shield",
+            "amount": 60,
+            "duration": 5
+          },
+          {
+            "type": "zone",
+            "duration": 5,
+            "radius": 155,
+            "damage": 2,
+            "tickRate": 0.15,
+            "speedMult": 0.35,
+            "atTarget": true,
+            "color": "#ffe9a8",
+            "text": "부흥회 통성기도"
+          }
+        ]
+      },
+      "passive": {
+        "name": "십일조의 축복",
+        "icon": "💰",
+        "type": "lifesteal",
+        "ratio": 0.25,
+        "desc": "양들의 헌금은 곧 오빠의 양식. 적에게 입힌 피해의 25%만큼 체력을 회복한다."
       }
     }
   }
