@@ -670,6 +670,8 @@ select.input{appearance:none}
       tickRate: action.tickRate || 0.4,
       tickTimer: 0,
       speedMult: action.speedMult || 0.1,
+      pull: action.pull || 0,                                   // 끌어당기는 힘 (0이면 없음)
+      pullRadius: action.pullRadius || (action.radius || 150),  // 빨아들이는 범위(보통 본체보다 넓게)
       color: action.color || '#fff',
       text: action.text || 'ZONE',
       image: action.image || null
@@ -894,6 +896,14 @@ select.input{appearance:none}
         for (const f of world.fighters) {
           if (f.team !== z.owner.team && f.alive()) {
             const dist = U.dist(f, { x: z.x, y: z.y });
+
+            // 끌어당기기: pullRadius 안의 적을 매 프레임 장판 중심으로 빨아들인다
+            if (z.pull > 0 && dist <= z.pullRadius + f.r && dist > 1) {
+              const d = U.dir(f, { x: z.x, y: z.y });
+              f.vx += d.x * z.pull * dt;
+              f.vy += d.y * z.pull * dt;
+            }
+
             if (dist <= z.r + f.r) {
               let hasDebuff = false;
               for (const b of f.buffs) {
@@ -1494,6 +1504,46 @@ select.input{appearance:none}
           actions: [
             { type: "stackmelee", range: 62, damage: 4, damagePerStack: 3.5, maxStacks: 8, stackGain: 1, stackDuration: 5, knockback: 30 }
           ]
+        }
+      },
+      hwang: {
+        name: "황성현",
+        image: "images/hwang.jpg",
+        color: "#c9a227",
+        maxHp: 230,
+        radius: 28,
+        baseSpeed: 130,
+        ultMax: 100,
+        ultOnHit: 9,
+        ultOnHurt: 11,
+        ultPerSec: 2.5,
+        basic: {
+          name: "오빠랑 기도하러 갈까?",
+          icon: "🙏",
+          cooldown: 2.4,
+          desc: "다정하게 손을 잡아 끌어당긴다. 가장 가까운 적을 1.4초간 본인 쪽으로 끌어오며 0.22초마다 4씩 '기도 헌신' 피해를 준다(흡혈 적용). 다 빨아먹고 나면 '기도 끝~ 이제 가봐'하며 머리를 쓰다듬어 8 피해로 멀리 밀쳐낸다.",
+          actions: [
+            { type: "speak", text: "오빠랑 기도하러 갈까? 🙏" },
+            { type: "tether", duration: 1.4, pull: 720, tickDamage: 4, tickRate: 0.22 },
+            { type: "melee", range: 72, damage: 8, knockback: 230 }
+          ]
+        },
+        ultimate: {
+          name: "다 같이 기도하자 (강제 부흥회)",
+          icon: "🙏",
+          ultImage: "다 같이 기도하자~~~ 🙏",
+          desc: "자기 자리에 '통성기도 장판'을 깔고 주변 모든 적을 장판 중심으로 강제로 끌어모은다. 5초간 끌려온 양들은 35% 속도로 묶인 채 0.15초마다 2씩 갉아먹히고, 그 피해의 일부를 황성현이 흡수한다(흡혈). 멀리 도망쳐도 계속 빨려 들어온다.",
+          actions: [
+            { type: "speak", text: "다 같이 기도하자~ 🙏" },
+            { type: "zone", duration: 5, radius: 165, pull: 300, pullRadius: 240, damage: 2, tickRate: 0.15, speedMult: 0.35, atTarget: false, color: "#ffe9a8", text: "강제 부흥회" }
+          ]
+        },
+        passive: {
+          name: "십일조의 축복",
+          icon: "💰",
+          type: "lifesteal",
+          ratio: 0.25,
+          desc: "양들의 헌금은 곧 오빠의 양식. 적에게 입힌 피해의 25%만큼 체력을 회복한다."
         }
       }
     }
